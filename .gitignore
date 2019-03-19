@@ -1,4 +1,8 @@
 # Logs
+terraform/.*
+terraform/terraform.tfvars
+*.zip
+
 logs
 *.log
 npm-debug.log*
