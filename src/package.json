@@ -1,0 +1,7 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "description": "sub package for dependencies to be included in lambda .zip",
+  "main": "index.js",
+  "license": "UNLICENSED"
+}

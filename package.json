@@ -1,0 +1,21 @@
+{
+  "name": "lambda-cluster-deploy",
+  "version": "1.0.0",
+  "description": "Lambda to deploy updates to EKS cluster",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "cd src && zip -r - . -x '*.json' > ../$npm_package_name-$npm_package_version.zip",
+    "postinstall": "cd src && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WeAreSavvy/lambda-cluster-deploy.git"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/WeAreSavvy/lambda-cluster-deploy/issues"
+  },
+  "homepage": "https://github.com/WeAreSavvy/lambda-cluster-deploy#readme"
+}
