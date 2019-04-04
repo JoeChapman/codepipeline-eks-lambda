@@ -1,16 +1,16 @@
-const Client = require('kubernetes-client').Client;
+const { Client } = require('kubernetes-client');
 const K8sConfig = require('kubernetes-client').config;
 
 class KubeClient {
   constructor(kubeConfig) {
     this.client = new Client({
       config: K8sConfig.fromKubeconfig(kubeConfig),
-      version: '1.9'
+      version: '1.9',
     });
   }
 
   async patch(options) {
-    return await this.client.apis.apps.v1
+    return this.client.apis.apps.v1
       .ns(options.namespace)
       .deploy(options.deployment)
       .patch({
@@ -20,12 +20,12 @@ class KubeClient {
               spec: {
                 containers: [{
                   name: options.container,
-                  image: `${options.imageUrl}:${options.imageTag}`
-                }]
-              }
-            }
-          }
-        }
+                  image: `${options.imageUrl}:${options.imageTag}`,
+                }],
+              },
+            },
+          },
+        },
       });
   }
 }

@@ -4,39 +4,30 @@ const getKubeConfig = require('./lib/kube-config');
 const responses = require('./lib/responses');
 const config = require('./config');
 
-exports.handler = (event, context, callback) => {
-  process.env['PATH'] = process.env['PATH'] + ':' + process.env['LAMBDA_TASK_ROOT'];
+exports.handler = (event, context) => {
+  process.env.PATH = `${process.env.PATH}:${process.env.LAMBDA_TASK_ROOT}`;
 
-  const jobId = event["CodePipeline.job"].id;
+  const jobId = event['CodePipeline.job'].id;
 
   const eks = new AWS.EKS({
     apiVersion: config.apiVersion,
-    region: config.awsRegion
+    region: config.awsRegion,
   });
 
   eks.describeCluster(config.params, async (err, data) => {
     if (err) {
-      console.log(err, err.stack);
+      console.error(err, err.stack);
     } else {
       try {
-        const kubeConfig = getKubeConfig(data, ({
-          executionRole, awsProfile
-        } = config);
-
+        const kubeConfig = getKubeConfig(data, config);
         const client = new KubeClient(kubeConfig);
-
-        const patch = await client.patch(({
-          namespace, deployment, container, imageUrl, imageTag
-        } = config));
-
+        const patch = await client.patch(config);
         const message = patch.body.metadata.status;
-
         responses.onSuccess(jobId, context, message);
       } catch (error) {
-        console.log(error, error.stack);
+        console.error(error, error.stack);
         responses.onFailure(jobId, context, error);
       }
     }
   });
 };
-

@@ -5,9 +5,8 @@
   "main": "index.js",
   "license": "UNLICENSED",
   "dependencies": {
+    "aws-sdk": "^2.435.0",
     "kubernetes-client": "^6.11.0"
   },
-  "devDependencies": {
-    "aws-sdk": "^2.426.0"
-  }
+  "devDependencies": {}
 }

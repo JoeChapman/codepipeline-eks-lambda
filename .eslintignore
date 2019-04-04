@@ -1,0 +1,4 @@
+terraform
+aws-iam-authenticator
+node_modules
+*.json

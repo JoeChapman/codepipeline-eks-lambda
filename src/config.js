@@ -9,5 +9,5 @@ module.exports = {
   executionRole: process.env.EXECUTION_ROLE || 'arn:aws:iam::906602599955:role/lambda-execution-role',
   sessionToken: process.env.AWS_SESSION_TOKEN || 'savvy',
   apiVersion: process.env.API_VERSION || '2017-11-01',
-  params: { name: process.env.CLUSTER_NAME || 'savvy' }
+  params: { name: process.env.CLUSTER_NAME || 'savvy' },
 };
