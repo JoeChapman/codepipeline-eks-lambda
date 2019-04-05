@@ -7,7 +7,9 @@ const config = require('./config');
 exports.handler = (event, context) => {
   process.env.PATH = `${process.env.PATH}:${process.env.LAMBDA_TASK_ROOT}`;
 
-  const jobId = event['CodePipeline.job'].id;
+  const job = event['CodePipeline.job'];
+  const { revision } = job.data.inputArtifacts[0];
+  const imageTag = revision.substring(0, 7);
 
   const eks = new AWS.EKS({
     apiVersion: config.apiVersion,
@@ -21,12 +23,12 @@ exports.handler = (event, context) => {
       try {
         const kubeConfig = getKubeConfig(data, config);
         const client = new KubeClient(kubeConfig);
-        const patch = await client.patch(config);
+        const patch = await client.patch(imageTag, config);
         const message = patch.body.metadata.status;
-        responses.onSuccess(jobId, context, message);
+        responses.onSuccess(job.id, context, message);
       } catch (error) {
         console.error(error, error.stack);
-        responses.onFailure(jobId, context, error);
+        responses.onFailure(job.id, context, error);
       }
     }
   });

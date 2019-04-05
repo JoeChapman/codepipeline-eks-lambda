@@ -1,28 +1,29 @@
-module.exports = (data, options) => ({
+/* eslint-disable-next-line max-len */
+module.exports = ({ cluster: { certificateAuthority, endpoint, arn } }, { executionRole, awsProfile }) => ({
   apiVersion: 'v1',
   clusters: [
     {
       cluster: {
-        'certificate-authority-data': data.cluster.certificateAuthority.data,
-        server: data.cluster.endpoint,
+        'certificate-authority-data': certificateAuthority.data,
+        server: endpoint,
       },
-      name: data.cluster.arn,
+      name: arn,
     },
   ],
   contexts: [
     {
       context: {
-        cluster: data.cluster.arn,
-        user: data.cluster.arn,
+        cluster: arn,
+        user: arn,
       },
-      name: data.cluster.arn,
+      name: arn,
     },
   ],
-  'current-context': data.cluster.arn,
+  'current-context': arn,
   kind: 'Config',
   users: [
     {
-      name: data.cluster.arn,
+      name: arn,
       user: {
         exec: {
           apiVersion: 'client.authentication.k8s.io/v1alpha1',
@@ -31,14 +32,14 @@ module.exports = (data, options) => ({
             '-i',
             'savvy',
             '-r',
-            options.executionRole,
+            executionRole,
           ],
           'token-key': 'status.token',
           command: 'aws-iam-authenticator',
           env: [
             {
               name: 'AWS_PROFILE',
-              value: options.awsProfile,
+              value: awsProfile,
             },
           ],
         },

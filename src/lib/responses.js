@@ -1,8 +1,8 @@
-const AWS = require('aws-sdk').CodePipeline();
+const AWS = require('aws-sdk');
 
 const codePipeline = new AWS.CodePipeline();
 
-const putJobSuccess = (id, ctx, msg) => codePipeline.putJobSuccessResult({ id }, (err) => {
+const putJobSuccess = (jobId, ctx, msg) => codePipeline.putJobSuccessResult({ jobId }, (err) => {
   if (err) {
     console.error('putJobSuccess Error', err);
     return ctx.fail(err);
@@ -10,8 +10,8 @@ const putJobSuccess = (id, ctx, msg) => codePipeline.putJobSuccessResult({ id },
   return ctx.succeed(msg);
 });
 
-const putJobFailure = (id, ctx, msg) => codePipeline.putJobFailureResult({
-  id,
+const putJobFailure = (jobId, ctx, msg) => codePipeline.putJobFailureResult({
+  jobId,
   failureDetails: {
     msg: JSON.stringify(msg),
     type: 'JobFailed',

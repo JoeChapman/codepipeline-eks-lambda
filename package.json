@@ -1,12 +1,12 @@
 {
   "name": "lambda-cluster-deploy",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "Lambda to deploy updates to EKS cluster",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint ./src",
     "test": "echo \"Error: no test specified\" && exit 0",
-    "pack": "cd src && zip -r - . -x '*.json' > ../$npm_package_name-$npm_package_version.zip",
+    "pack": "cd src && zip -r - . > ../$npm_package_name-$npm_package_version.zip",
     "postinstall": "cd src && npm install"
   },
   "husky": {
@@ -28,6 +28,8 @@
   "devDependencies": {
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
+    "aws-sdk": "2.354.0",
+    "aws-sdk-mock": "4.2.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",

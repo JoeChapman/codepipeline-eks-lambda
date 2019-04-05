@@ -9,7 +9,7 @@ class KubeClient {
     });
   }
 
-  async patch(options) {
+  async patch(imageTag, options) {
     return this.client.apis.apps.v1
       .ns(options.namespace)
       .deploy(options.deployment)
@@ -20,7 +20,7 @@ class KubeClient {
               spec: {
                 containers: [{
                   name: options.container,
-                  image: `${options.imageUrl}:${options.imageTag}`,
+                  image: `${options.imageUrl}:${imageTag}`,
                 }],
               },
             },

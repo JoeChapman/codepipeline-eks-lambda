@@ -1,5 +1,6 @@
 # Logs
 terraform/.*
+terraform/plan.tf
 terraform/terraform.tfvars
 *.zip
 
