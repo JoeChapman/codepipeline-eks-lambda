@@ -6,5 +6,16 @@ resource "aws_lambda_function" "lambda_cluster_deploy_function" {
   role             = "${data.terraform_remote_state.codepipeline.lambda_execution_role_arn}"
   handler          = "index.handler"
   runtime          = "nodejs8.10"
-  publish          = true
+  timeout          = "20"
+
+  depends_on = [
+    "aws_s3_bucket_object.lambda_cluster_deploy_function",
+  ]
+}
+
+resource "aws_s3_bucket_object" "lambda_cluster_deploy_function" {
+  bucket = "${var.cluster-name}-${var.environment}-lambda"
+  key    = "lambda-cluster-deploy-${var.app_version}.zip"
+  source = "../lambda-cluster-deploy-${var.app_version}.zip"
+  etag   = "${md5(file("../lambda-cluster-deploy-${var.app_version}.zip"))}"
 }

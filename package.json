@@ -1,12 +1,19 @@
 {
   "name": "lambda-cluster-deploy",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "Lambda to deploy updates to EKS cluster",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "pack": "cd src && zip -r - . -x '*.json' > ../$npm_package_name-$npm_package_version.zip",
+    "lint": "eslint ./src",
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "pack": "cd src && zip -r - . > ../$npm_package_name-$npm_package_version.zip",
     "postinstall": "cd src && npm install"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint --fix && npm test",
+      "pre-push": "npm run lint --fix && npm test"
+    }
   },
   "repository": {
     "type": "git",
@@ -17,5 +24,16 @@
   "bugs": {
     "url": "https://github.com/WeAreSavvy/lambda-cluster-deploy/issues"
   },
-  "homepage": "https://github.com/WeAreSavvy/lambda-cluster-deploy#readme"
+  "homepage": "https://github.com/WeAreSavvy/lambda-cluster-deploy#readme",
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.16.0",
+    "aws-sdk": "2.354.0",
+    "aws-sdk-mock": "4.2.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.12.4",
+    "husky": "^1.3.1"
+  }
 }
