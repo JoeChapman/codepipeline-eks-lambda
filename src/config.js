@@ -1,5 +1,5 @@
 module.exports = {
-  imageUrl: process.env.IMAGE_URL || '906602599955.dkr.ecr.eu-west-1.amazonaws.com/savvy-api',
+  imageUrl: process.env.IMAGE_URL || '906602599955.dkr.ecr.eu-west-1.amazonaws.com/savvyql-server',
   imageTag: process.env.IMAGE_TAG || 'latest',
   namespace: process.env.NAMESPACE || 'savvy-dev',
   deployment: process.env.DEPLOYMENT || 'savvy-api-dev',
