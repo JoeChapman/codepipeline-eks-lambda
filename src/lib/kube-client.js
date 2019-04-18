@@ -9,18 +9,20 @@ class KubeClient {
     });
   }
 
-  async patch(imageTag, options) {
+  async patch({
+    namespace, deployment, container, imageUrl, imageTag,
+  }) {
     return this.client.apis.apps.v1
-      .ns(options.namespace)
-      .deploy(options.deployment)
+      .ns(namespace)
+      .deploy(deployment)
       .patch({
         body: {
           spec: {
             template: {
               spec: {
                 containers: [{
-                  name: options.container,
-                  image: `${options.imageUrl}:${imageTag}`,
+                  name: container,
+                  image: `${imageUrl}:${imageTag}`,
                 }],
               },
             },
