@@ -23,7 +23,7 @@ exports.handler = async (event, context) => {
 
   try {
     // UserParameters are always JSON-encoded
-    const userParams = JSON.parse(UserParameters);
+    const userParams = UserParameters && JSON.parse(UserParameters);
     const options = { ...config, ...userParams };
     options.imageTag = revision.substring(0, 7);
     const cluster = await describeCluster(options);

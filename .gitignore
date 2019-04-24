@@ -1,7 +1,7 @@
-# Logs
-terraform/.*
-terraform/plan.tf
-terraform/terraform.tfvars
+
+.terraform
+plan.tf
+terraform.tfvars
 *.zip
 
 logs
