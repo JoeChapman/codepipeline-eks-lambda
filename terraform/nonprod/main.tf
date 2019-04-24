@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "lambda_cluster_deploy_function" {
-  s3_bucket        = "${var.cluster-name}-${var.environment}-lambda"
+  s3_bucket        = "savvy-nonprod-lambda"
   s3_key           = "lambda-cluster-deploy-${var.app_version}.zip"
   source_code_hash = "${base64sha256(file("../../lambda-cluster-deploy-${var.app_version}.zip"))}"
   function_name    = "lambda-cluster-deploy"
@@ -14,7 +14,7 @@ resource "aws_lambda_function" "lambda_cluster_deploy_function" {
 }
 
 resource "aws_s3_bucket_object" "lambda_cluster_deploy_function" {
-  bucket = "${var.cluster-name}-${var.environment}-lambda"
+  bucket = "savvy-nonprod-lambda"
   key    = "lambda-cluster-deploy-${var.app_version}.zip"
   source = "../../lambda-cluster-deploy-${var.app_version}.zip"
   etag   = "${md5(file("../../lambda-cluster-deploy-${var.app_version}.zip"))}"
