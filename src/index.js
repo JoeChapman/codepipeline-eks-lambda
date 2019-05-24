@@ -26,6 +26,11 @@ exports.handler = async (event, context) => {
     const userParams = UserParameters && JSON.parse(UserParameters);
     const options = { ...config, ...userParams };
     options.imageTag = revision.substring(0, 7);
+
+    if (options.buildEnv) {
+      options.imageTag += `-${options.buildEnv}`;
+    }
+
     const cluster = await describeCluster(options);
     const client = new KubeClient(getKubeConfig(cluster, options));
     const patch = await client.patch(options);
