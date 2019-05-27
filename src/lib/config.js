@@ -10,5 +10,5 @@ module.exports = {
   sessionToken: process.env.AWS_SESSION_TOKEN || 'savvy',
   apiVersion: process.env.API_VERSION || '2017-11-01',
   name: process.env.CLUSTER_NAME || 'savvy',
-  buildEnv: process.env.BUILD_ENV || 'live',
+  buildEnv: process.env.BUILD_ENV || '',
 };
