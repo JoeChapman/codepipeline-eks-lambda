@@ -22,6 +22,20 @@ exports.handler = async (event, context) => {
   } = event['CodePipeline.job'];
 
   try {
+    const {
+      data: {
+        inputArtifacts,
+      },
+    } = event['CodePipeline.job'];
+    // eslint-disable-next-line no-console
+    console.log(inputArtifacts);
+  } catch (e) {
+    if (e) {
+      console.error(e);
+    }
+  }
+
+  try {
     // UserParameters are always JSON-encoded
     const userParams = UserParameters && JSON.parse(UserParameters);
     const options = { ...config, ...userParams };
@@ -33,7 +47,10 @@ exports.handler = async (event, context) => {
 
     const cluster = await describeCluster(options);
     const client = new KubeClient(getKubeConfig(cluster, options));
+
     const patch = await client.patch(options);
+
+
     await responses.onSuccess(id);
     const { body: { metadata: { status } } } = patch;
     // Tells CodePipeline the operation was successful
