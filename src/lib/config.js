@@ -11,4 +11,5 @@ module.exports = {
   apiVersion: process.env.API_VERSION || '2017-11-01',
   name: process.env.CLUSTER_NAME || 'savvy',
   buildEnv: process.env.BUILD_ENV || '',
+  envName: process.env.ENV_FILE_NAME || '',
 };

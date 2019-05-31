@@ -1,7 +1,8 @@
 const KubeClient = require('./lib/kube-client');
 const getKubeConfig = require('./lib/kube-config');
-const responses = require('./lib/responses');
+const pipelineResponses = require('./lib/pipeline-responses');
 const describeCluster = require('./lib/describe-cluster');
+const prepareDeployment = require('./lib/prepare-deployment');
 const config = require('./lib/config');
 
 exports.handler = async (event, context) => {
@@ -17,23 +18,15 @@ exports.handler = async (event, context) => {
       },
       inputArtifacts: [{
         revision,
+        location: {
+          s3Location: {
+            bucketName,
+            objectKey,
+          },
+        },
       }],
     },
   } = event['CodePipeline.job'];
-
-  try {
-    const {
-      data: {
-        inputArtifacts,
-      },
-    } = event['CodePipeline.job'];
-    // eslint-disable-next-line no-console
-    console.log(inputArtifacts);
-  } catch (e) {
-    if (e) {
-      console.error(e);
-    }
-  }
 
   try {
     // UserParameters are always JSON-encoded
@@ -41,25 +34,55 @@ exports.handler = async (event, context) => {
     const options = { ...config, ...userParams };
     options.imageTag = revision.substring(0, 7);
 
+    if (!options.envName) {
+      switch (options.namespace) {
+        case 'savvy-dev':
+          options.envName = 'env-dev';
+          break;
+        case 'savvy-staging':
+          options.envName = 'env-staging';
+          break;
+        case 'savvy-live':
+          options.envName = 'env-live';
+          break;
+        default:
+          break;
+      }
+    }
+
     if (options.buildEnv) {
       options.imageTag += `-${options.buildEnv}`;
     }
 
+    // Download the source code and inject the env vars
+    const prepared = await prepareDeployment(bucketName, objectKey, options);
+
+    // Log in to EKS cluster
     const cluster = await describeCluster(options);
-    const client = new KubeClient(getKubeConfig(cluster, options));
+    const kubeClient = new KubeClient(getKubeConfig(cluster, options));
 
-    const patch = await client.patch(options);
+    // convert yaml to json and apply to Cluster
+    const deployed = await kubeClient.apply(prepared, options);
 
+    // eslint-disable-next-line no-console
+    console.log('Deployed -------->', deployed);
 
-    await responses.onSuccess(id);
-    const { body: { metadata: { status } } } = patch;
-    // Tells CodePipeline the operation was successful
-    context.succeed(status);
+    // tell codepipeline it was succcessful
+    await pipelineResponses.onSuccess(id);
+    // tell the lambda it's done
+    context.succeed('done');
   } catch (error) {
-    console.error(error, error.stack);
     try {
-      await responses.onFailure(id, context, error);
-      context.fail(error);
+      // There is a bug when updating a Service,
+      // which returns a 422. Ignore error and continue
+      if (error.code && error.code === 422) {
+        await pipelineResponses.onSuccess(id);
+        context.succeed('done');
+      } else {
+        console.error(error, error.stack);
+        await pipelineResponses.onFailure(id, context, error);
+        context.fail(error);
+      }
     } catch (err) {
       console.error(err, err.stack);
     }
