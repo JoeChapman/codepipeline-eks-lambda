@@ -1,6 +1,5 @@
 const proxyquire = require('proxyquire');
 const test = require('tape');
-const AWS = require('aws-sdk-mock');
 const sinon = require('sinon');
 
 const applyResponse = { body: { metadata: { status: 'ok' } } };
@@ -36,11 +35,17 @@ const describeCluster = sinon.stub().resolves({
   },
 });
 
+const prepareDeployment = sinon.stub().resolves({
+  foo: 'bar'
+});
+
 const { handler } = proxyquire('./index', {
   './lib/kube-client': KubeClientStub,
   './lib/pipeline-responses': responsesStub,
   './lib/describe-cluster': describeCluster,
+  './lib/prepare-deployment': prepareDeployment
 });
+
 
 test.only(__filename, async (t) => {
   t.plan(1);
@@ -89,5 +94,4 @@ test.only(__filename, async (t) => {
 
   t.equal(context.succeed.callCount, 1);
 
-  AWS.restore();
 });
