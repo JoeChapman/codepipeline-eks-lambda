@@ -7,6 +7,7 @@ resource "aws_lambda_function" "lambda_cluster_deploy_function" {
   handler          = "index.handler"
   runtime          = "nodejs8.10"
   timeout          = "20"
+  memory_size      = "512"
 
   depends_on = [
     "aws_s3_bucket_object.lambda_cluster_deploy_function",
