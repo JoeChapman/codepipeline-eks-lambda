@@ -14,30 +14,48 @@ class KubeClient {
   async apply(prepared, { namespace }) {
     return Promise.all(
       prepared.map(async (doc) => {
-        const content = yaml.safeLoad(readFileSync(doc.outputFile), 'utf8');
+        const body = yaml.safeLoad(readFileSync(doc.outputFile), 'utf8');
 
-        switch (content.kind) {
+        switch (body.kind) {
           case 'Deployment':
-            return this.client.apis.extensions.v1beta1
-              .ns(namespace)
-              .deployments(content.metadata.name)
-              .put({ body: content });
+            try {
+              return this.client.apis.extensions.v1beta1.ns(namespace).deployments.post({ body });
+            } catch (error) {
+              if (error.code !== 409) throw error;
+              return this.client.apis.extensions.v1beta1
+                .ns(namespace)
+                .deployments(body.metadata.name)
+                .put({ body });
+            }
           case 'Ingress':
-            return this.client.apis.extensions.v1beta1
-              .ns(namespace)
-              .ingresses(content.metadata.name)
-              .put({ body: content });
+            try {
+              return this.client.apis.extensions.v1beta1.ns(namespace).ingresses.post({ body });
+            } catch (error) {
+              if (error.code !== 409) throw error;
+              return this.client.apis.extensions.v1beta1
+                .ns(namespace)
+                .ingresses(body.metadata.name)
+                .put({ body });
+            }
           case 'Service':
-            return this.client.api.v1
-              .namespaces(namespace)
-              .services(content.metadata.name)
-              .put({ body: content });
+            try {
+              return this.client.api.v1.namespaces(namespace).services.post({ body });
+            } catch (error) {
+              if (error.code !== 409) throw error;
+              return this.client.api.v1
+                .namespaces(namespace)
+                .services(body.metadata.name)
+                .put({ body });
+            }
           case 'Namespace':
-            return this.client.api.v1
-              .namespaces(namespace)
-              .put({ body: content });
+            try {
+              return this.client.api.v1.namespaces.post({ body });
+            } catch (error) {
+              if (error.code !== 409) throw error;
+              return this.client.api.v1.namespaces(namespace).put({ body });
+            }
           default:
-            return content;
+            return body;
         }
       }),
     );
