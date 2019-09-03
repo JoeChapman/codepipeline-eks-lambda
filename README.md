@@ -1,29 +1,23 @@
-# lambda-cluster-deploy
-> Node.js Lambda to deploy updates to the EKS cluster
+# CodePipeline EKS Lambda
 
-Triggered from a the Invoke CodeBuild phase with the hash of the Git commit that triggered CodePipeline
+> AWS Lambda written with Node.js, designed to deploy Kubernetes resources from CodePipeline to an EKS cluster
+
+It is triggered from the `Invoke CodeBuild` phase of the pipeline with the hash of the Git commit that triggered CodePipeline
 
 ## Usage
 
- * Clone this repository
- * `npm install`
- * `npm run pack`
+- Update the package.json version number
 
-This should create a `.zip` folder at the route of the project with can be uploaded via the AWS Lambda interface.
+- Run `npm run pack` to generate a file with the format `codepipeline-eks-lambda-<version number>.zip` in the root of the project
 
-### `npm run pack`
+- Log in to AWS cli (I use [awsmfa](https://pypi.org/project/awsmfa/) for 2FA)
 
-Generate a .zip package file to upload to to AWS Lambda with Terraform.
+- `cd` into `terraform/`
 
-`cd src && zip -r - . -x '*.test.js' -x 'package*' > ../$npm_package_name-$npm_package_version.zip`
+- Update the the version number for deployment in `/variables.tf`
 
-There are a couple of things going on in this script so to break it down a bit
+- Then deploy with `terraform`;
 
- - `cd src`: navigate into the `/src` directory from project root.
- - `zip -r - .`: zip recursively (`-r`) files from current location (`.`) to stdout (`-`);
- - `-x '*.test.js'`: excluding `.test.js` files. This is a glob pattern so is wrapped in quotes.
- - `-x 'package*'` : excluding package & package-lock files
- - `> ../$npm_package_name-$npm_package_version.zip` redirect from stdout into the parent folder using package name and package version in the file name.
-
- Redirecting via stdout means that the .zip is fully re-written each time and files that have been deleted from the project will not remain in the zip file.
+  - `terraform plan -out=plan.tf`
+  - `terraform apply plan.tf`
 
